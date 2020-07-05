@@ -1,8 +1,8 @@
 package com.vrtools.me.service;
 
-import io.github.jhipster.config.JHipsterProperties;
 import com.vrtools.me.config.audit.AuditEventConverter;
 import com.vrtools.me.repository.PersistenceAuditEventRepository;
+import io.github.jhipster.config.JHipsterProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.audit.AuditEvent;
