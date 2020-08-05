@@ -105,6 +105,18 @@
 
         <!-- Custom project dependencies -->
 
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>6.14.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20200518</version>
+        </dependency>
+
         <!-- Custom project dependencies -->
 
         <dependency>

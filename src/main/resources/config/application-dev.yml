@@ -119,3 +119,8 @@ jhipster:
 # ===================================================================
 
 # application:
+
+firebase:
+  api-url: https://fcm.googleapis.com/fcm/send
+  server-key: AAAAoohhBFE:APA91bFpkTIuYk-JmaJRzomZkkataucXIYVxFPOIkbxCMaMvD0BGTmBFtfc2FfDpdAOJgNP3PHYoPZDoxA53-FQ7n32ioMEx0zWtY4L2iovPcmR41JNiTu6YcjgKTHN1NzstGvEh5qtB
+  config: vrtools-firebase.json
