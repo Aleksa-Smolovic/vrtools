@@ -1,0 +1,165 @@
+<html>
+
+<head>
+    <title>Chat WebSocket</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
+</head>
+
+<body onload="disconnect()">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+
+            </ul>
+            <div class="form-inline my-2 my-lg-0">
+                <button class="btn btn-outline-success my-2 my-sm-0" id="connect" type="submit">Connect</button>
+                <button class="btn btn-outline-success my-2 ml-2 my-sm-0" id="disconnect" disabled
+                    type="submit">Disconnect</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row mt-3">
+            <div class="col-6">
+                <h1>Public notifications:</h1>
+
+                <div class="form-group">
+                    <label for="exampleInputText">Text</label>
+                    <input id="notification-text" type="text" class="form-control" id="exampleInputText"
+                        aria-describedby="emailHelp" placeholder="Enter notification text">
+                </div>
+                <button type="submit" id="notification-btn" class="btn btn-primary">Send notification</button>
+
+                <hr>
+
+                <ul class="mt-3 list-group" id="notifications"></ul>
+
+            </div>
+            <div class="col-6">
+                <h1>Personal messages:</h1>
+
+                <div class="form-group">
+                    <label for="exampleInputText">Message</label>
+                    <input id="message-text" type="text" class="form-control" id="exampleInputText"
+                        aria-describedby="emailHelp" placeholder="Enter message">
+                </div>
+                <button type="submit" id="message-btn" class="btn btn-primary">Send message</button>
+
+                <hr>
+
+                <ul class="mt-3 list-group" id="messages">
+                </ul>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script>
+
+    var stompClient = null;
+
+    function connect() {
+        var bearerToken = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1dGgiOiJST0xFX0FETUlOLFJPTEVfVVNFUiIsImV4cCI6MTU5NzY5Mzk2OX0.99SbXrvSH7prSaiql3NoROibrTo7oRjROO33kyEeFpv8OpZb6azQm2gzlLyW3F6foZoQA92-68BMiz_DLOn4fg';
+        var url = 'http://localhost:8080/websocket?access_token=' + bearerToken;
+        var socket = new SockJS(url);
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/notifications', function (notification) {
+                console.log("Arrived: " + notification);
+                addNotification(notification);
+            });
+            stompClient.subscribe('/topic/notifications/object', function (notification) {
+                console.log("Arrived object: " + notification);
+                addNotification(notification);
+            });
+            stompClient.subscribe('/user/queue/chat', function (message) {
+                console.log("Arrived message: " + message);
+                addMessage(message);
+            });
+        });
+        $('#connect').prop('disabled', true);
+        $('#disconnect').prop('disabled', false);
+    }
+
+    function addNotification(notification) {
+        var notifBody = JSON.parse(notification.body);
+
+        var notifElement = ' <li class="list-group-item">Title: ' + notifBody.title + ":<b> Text:</b> " + notifBody.text + " - " + notifBody.time +  '</li>';
+        $('#notifications').append(notifElement);
+    }
+
+    function addMessage(message) {
+        var messageBody = JSON.parse(message.body);
+
+        var messageElement = ' <li class="list-group-item">Title: ' + messageBody.title + ":<b> Text:</b> " + messageBody.text + " - " + messageBody.time + '</li>';
+        $('#messages').append(messageElement);
+    }
+
+    $('#connect').click(function () {
+        connect();
+    });
+
+    $('#disconnect').click(function () {
+        disconnect();
+    });
+
+    $('#notification-btn').click(function () {
+        sendNotification();
+    });
+
+    $('#message-btn').click(function () {
+        sendMessage();
+    });
+
+    function sendNotification() {
+        var notificationText = $('#notification-text').val();
+        //send(dest, headers, payload)
+        stompClient.send("/send/notifications/object", {},
+            JSON.stringify({
+                'title': 'Fixed notification title',
+                'text': notificationText
+            }));
+    }
+
+    function sendMessage() {
+        var messageText = $('#message-text').val();
+        stompClient.send("/send/message/object", {},
+            JSON.stringify({
+                'title': 'Fixed message title',
+                'text': messageText
+            }));
+    }
+
+    function disconnect() {
+        if (stompClient != null)
+            stompClient.disconnect();
+        $('#connect').prop('disabled', false);
+        $('#disconnect').prop('disabled', true);
+        console.log("Disconnected");
+    }
+
+</script>
+
+</html>

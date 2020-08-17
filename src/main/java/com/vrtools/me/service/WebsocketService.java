@@ -1,29 +1,34 @@
 package com.vrtools.me.service;
 
-import com.vrtools.me.service.dto.NotificationDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import com.vrtools.me.domain.User;
+import com.vrtools.me.repository.UserRepository;
+import com.vrtools.me.service.dto.MessageDTO;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class WebsocketService {
 
-    private final Logger log = LoggerFactory.getLogger(WebsocketService.class);
+    private final SimpMessageSendingOperations messagingTemplate;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
-
-    public void sendNotificationToUser(String token, String message){
-        messagingTemplate.convertAndSend("/user/" + token, message);
+    public WebsocketService(SimpMessageSendingOperations messagingTemplate, UserRepository userRepository) {
+        this.messagingTemplate = messagingTemplate;
+        this.userRepository = userRepository;
     }
 
-    public void sendNotificationToTopic(String topic, NotificationDTO notificationDTO){
-        messagingTemplate.convertAndSend("/topic/" + topic, notificationDTO);
+    public void sendNotification(String text){
+        messagingTemplate.convertAndSend("/topic/notifications", text);
+    }
+
+    public void sendObjectNotification(MessageDTO notification){
+        messagingTemplate.convertAndSend("/topic/notifications/object", notification);
+    }
+
+    public void sendMessageToUser(MessageDTO message){
+        User user = userRepository.findOneByLogin("admin").orElse(null);
+        assert(user != null);
+        messagingTemplate.convertAndSendToUser(user.getLogin(), "/queue/chat", message);
     }
 
 }
