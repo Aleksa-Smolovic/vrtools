@@ -72,7 +72,7 @@ public class City implements Serializable {
         this.population = population;
     }
 
-    public Boolean isIsCapital() {
+    public Boolean getIsCapital() {
         return isCapital;
     }
 
@@ -122,7 +122,7 @@ public class City implements Serializable {
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", population=" + getPopulation() +
-            ", isCapital='" + isIsCapital() + "'" +
+            ", isCapital='" + getIsCapital() + "'" +
             "}";
     }
 }

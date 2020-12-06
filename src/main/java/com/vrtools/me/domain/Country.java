@@ -5,6 +5,7 @@ import javax.persistence.*;
 import javax.validation.constraints.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * A Country.
@@ -30,6 +31,17 @@ public class Country implements Serializable {
     @NotNull
     @Column(name = "currency", nullable = false)
     private String currency;
+
+    @OneToMany(mappedBy = "country", fetch = FetchType.EAGER)
+    private List<City> cities;
+
+    public List<City> getCities() {
+        return cities;
+    }
+
+    public void setCities(List<City> cities) {
+        this.cities = cities;
+    }
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {

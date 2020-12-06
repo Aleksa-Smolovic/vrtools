@@ -7,7 +7,6 @@ import com.vrtools.me.repository.CityRepository;
 import com.vrtools.me.service.CityService;
 import com.vrtools.me.service.dto.CityDTO;
 import com.vrtools.me.service.mapper.CityMapper;
-import com.vrtools.me.service.dto.CityCriteria;
 import com.vrtools.me.service.CityQueryService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -134,7 +133,7 @@ public class CityResourceIT {
         City testCity = cityList.get(cityList.size() - 1);
         assertThat(testCity.getName()).isEqualTo(DEFAULT_NAME);
         assertThat(testCity.getPopulation()).isEqualTo(DEFAULT_POPULATION);
-        assertThat(testCity.isIsCapital()).isEqualTo(DEFAULT_IS_CAPITAL);
+        assertThat(testCity.getIsCapital()).isEqualTo(DEFAULT_IS_CAPITAL);
     }
 
     @Test
@@ -233,7 +232,7 @@ public class CityResourceIT {
             .andExpect(jsonPath("$.[*].population").value(hasItem(DEFAULT_POPULATION)))
             .andExpect(jsonPath("$.[*].isCapital").value(hasItem(DEFAULT_IS_CAPITAL.booleanValue())));
     }
-    
+
     @Test
     @Transactional
     public void getCity() throws Exception {
@@ -593,7 +592,7 @@ public class CityResourceIT {
         City testCity = cityList.get(cityList.size() - 1);
         assertThat(testCity.getName()).isEqualTo(UPDATED_NAME);
         assertThat(testCity.getPopulation()).isEqualTo(UPDATED_POPULATION);
-        assertThat(testCity.isIsCapital()).isEqualTo(UPDATED_IS_CAPITAL);
+        assertThat(testCity.getIsCapital()).isEqualTo(UPDATED_IS_CAPITAL);
     }
 
     @Test
