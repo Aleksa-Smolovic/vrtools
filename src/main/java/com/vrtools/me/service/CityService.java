@@ -58,7 +58,6 @@ public class CityService {
             .map(cityMapper::toDto);
     }
 
-
     /**
      * Get one city by id.
      *

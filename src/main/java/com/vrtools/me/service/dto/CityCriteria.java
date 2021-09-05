@@ -1,15 +1,10 @@
 package com.vrtools.me.service.dto;
 
+import io.github.jhipster.service.Criteria;
+import io.github.jhipster.service.filter.*;
+
 import java.io.Serializable;
 import java.util.Objects;
-import io.github.jhipster.service.Criteria;
-import io.github.jhipster.service.filter.BooleanFilter;
-import io.github.jhipster.service.filter.DoubleFilter;
-import io.github.jhipster.service.filter.Filter;
-import io.github.jhipster.service.filter.FloatFilter;
-import io.github.jhipster.service.filter.IntegerFilter;
-import io.github.jhipster.service.filter.LongFilter;
-import io.github.jhipster.service.filter.StringFilter;
 
 /**
  * Criteria class for the {@link com.vrtools.me.domain.City} entity. This class is used
